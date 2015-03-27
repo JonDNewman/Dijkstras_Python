@@ -1,0 +1,200 @@
+import time
+
+
+#!/usr/bin/python
+#
+# Part 1:  Read file, assign to giant list
+#
+# each list element contains a vertex number,
+listSize = 1000
+file = open("1000.txt")  #open the text file
+line = file.readline()  #discard the 1st line
+line = file.readline()  #this is the 1st valid line
+print "Setting up for Dijkstras, timing doesn't start" \
+      " until entry to algorithm"
+Q = [[i] for i in range(listSize)]
+R = [i for i in range(listSize)]
+
+#create a list of length 1000
+
+def retreiveindex(x):
+
+      return R[x]
+      y = 0
+      for i in Q:
+        if i[0] == x:
+          return y
+        y += 1
+
+
+
+      return -1
+
+for x in range(listSize):
+    Q[x].append(-1)
+    Q[x].append(None)
+
+while 1:
+    if not line:
+        #print "EOF"
+        break  #check for EOF
+    elif line.strip():  #check for empty line
+        #print "not an empty line"
+        #print r.strip()
+        while line.find(" ") != 0:
+            #must be a vertex u
+            x = int(line.strip())
+            # print x
+            line = file.readline()
+            #load the next token
+
+
+
+            while (line.find(" ") == 0) and (line.strip() != ' '):
+                #
+                y= line.split()
+                y[0],y[1]= int(y[0]), int(y[1])
+
+                Q[int(x)].append(y)
+
+                line = file.readline()
+
+            line = file.readline()
+            #loading line for next iter
+            break
+
+Q[0][1] = 0
+
+for i in Q:
+    if len(i)>3:
+      for x in i[3:]:
+          if x[0] > i[0]:
+           Q[x[0]].append([i[0],x[1]])
+
+
+
+#print list
+
+#
+# End Part 1
+#
+
+
+def dijkstras(Q):  #queue is already assigned
+    print "going into dijkstras, timing started now"
+    s = []
+
+    def rchild(i):
+        return (i+i) + 2
+
+    def lchild(i):
+        return (i+i) + 1
+
+    def parent(i):
+        return (i - 1)/2
+
+
+    def heapDecrKey(i, key):
+
+        if key == -1:
+            print "error, key is -1"
+        if key > Q[i][1] != -1:
+            print "key is larger than current value"
+            return
+        Q[i][1] = key
+        p = parent(i)
+        while (i > 0) and (Q[p][1] > Q[i][1] or Q[p][1] == -1):
+            R[Q[i][0]],R[Q[p][0]] = R[Q[p][0]], R[Q[i][0]]
+            Q[i], Q[p] = Q[p], Q[i]
+            i = p
+            p = parent(i)
+
+    def extractMin():  #extract root, exchange for bottom element, sift down
+        if len(Q) < 1:
+            "error"
+        min = Q[0]
+        R[Q[len(Q)-1][0]]=0
+        Q[0], Q[len(Q) - 1] = Q[len(Q) - 1], Q[0]
+
+        del Q[len(Q) - 1]
+        minHeapify(Q, 0)
+        return min
+
+    def relax(u, v, w):
+        if (w == -1) or u[1] == -1:
+            return
+
+        if (v[1] == -1) or (v[1] > u[1] + w):
+            v[2] = u[0]
+            r=retreiveindex(v[0])
+            if r != -1: heapDecrKey(r, u[1] + w)
+
+
+      
+
+    def minHeapify(A, i):
+
+      l = lchild(i)
+      r = rchild(i)
+
+
+      if (l < len(A)):
+         if A[l][1] < A[i][1]:
+            if A[l][1] != -1:
+              smallest = l
+            else: smallest = i
+
+         elif A[i][1] == -1 and A[l][1] != -1:
+           smallest = l
+         else: smallest = i
+      else:
+        smallest = i
+
+      if (r < len(A)):
+         if A[r][1] < A[smallest][1]:
+            if A[r][1] != -1:
+              smallest = r
+            else: None
+
+         elif A[smallest][1] == -1 and A[r][1] != -1:
+           smallest = r
+         else: None
+      else:
+        None
+      if i != smallest:
+         R[A[i][0]], R[A[smallest][0]] = R[A[smallest][0]], R[A[i][0]]
+         A[i], A[smallest] = A[smallest], A[i]
+         minHeapify(A, smallest)
+
+    while len(Q) > 0:
+
+
+      u = extractMin()
+      R[u[0]] = -1
+
+      s.append(u)
+      if len(u) > 3:
+         i = 3
+         for v in u[3:]:
+
+            r=retreiveindex(v[0])
+
+            if r !=-1: relax(u, Q[r], u[i][1])
+            i += 1
+
+
+
+    return s
+start = time.time()
+s=dijkstras(Q)
+i=0
+z =0
+for x in s:
+
+   i+=x[1]
+   #print x[0], x[1], z
+   #z+=1
+end =time.time() - start
+print end
+print i
+#for x in s: None
